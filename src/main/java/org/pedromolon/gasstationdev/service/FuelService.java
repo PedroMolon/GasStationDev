@@ -2,6 +2,7 @@ package org.pedromolon.gasstationdev.service;
 
 import lombok.RequiredArgsConstructor;
 import org.pedromolon.gasstationdev.entity.Fuel;
+import org.pedromolon.gasstationdev.exception.ResourceNotFoundException;
 import org.pedromolon.gasstationdev.repository.FuelRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class FuelService {
 
     public Fuel getFuelById(Long id) {
         return fuelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Fuel not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Fuel not found with id: " + id));
     }
 
     public Fuel saveFuel(Fuel fuel) {
@@ -28,13 +29,16 @@ public class FuelService {
 
     public Fuel updateFuel(Long id, Fuel fuel) {
         Fuel foundFuel = fuelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Fuel not found with id:" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Fuel not found with id:" + id));
         foundFuel.setName(fuel.getName());
         foundFuel.setPrice(fuel.getPrice());
         return fuelRepository.save(foundFuel);
     }
 
     public void deleteFuel(Long id) {
+        if (fuelRepository.findById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Fuel not found with id: " + id);
+        }
         fuelRepository.deleteById(id);
     }
 

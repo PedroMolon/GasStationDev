@@ -1,22 +1,17 @@
 package org.pedromolon.gasstationdev.mapper;
 
-import lombok.experimental.UtilityClass;
 import org.pedromolon.gasstationdev.dto.request.GasStationRequest;
 import org.pedromolon.gasstationdev.dto.response.GasStationResponse;
-import org.pedromolon.gasstationdev.entity.Fuel;
 import org.pedromolon.gasstationdev.entity.GasStation;
 
-@UtilityClass
-public class GasStationMapper {
+import java.util.Collections;
+import java.util.stream.Collectors;
 
-    public static Fuel getFuelById(Long id) {
-        return Fuel.builder().id(id).build();
-    }
+public class GasStationMapper {
 
     public static GasStation toEntity(GasStationRequest request) {
         return GasStation.builder()
                 .name(request.name())
-                .fuel(getFuelById(request.fuelId()))
                 .build();
     }
 
@@ -24,8 +19,9 @@ public class GasStationMapper {
         return GasStationResponse.builder()
                 .id(gasStation.getId())
                 .name(gasStation.getName())
-                .fuel(gasStation.getFuel())
+                .pumps(gasStation.getPumps() != null ? gasStation.getPumps().stream()
+                        .map(PumpMapper::toResponse)
+                        .collect(Collectors.toList()) : Collections.emptyList())
                 .build();
     }
-
 }

@@ -2,6 +2,7 @@ package org.pedromolon.gasstationdev.service;
 
 import lombok.RequiredArgsConstructor;
 import org.pedromolon.gasstationdev.entity.GasStation;
+import org.pedromolon.gasstationdev.exception.ResourceNotFoundException;
 import org.pedromolon.gasstationdev.repository.GasStationRepository;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ public class GasStationService {
 
     public GasStation getGasStationById(Long id) {
         return gasStationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GasStation not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("GasStation not found with id: " + id));
     }
 
     public GasStation createGasStation(GasStation gasStation) {
@@ -28,13 +29,15 @@ public class GasStationService {
 
     public GasStation updateGasStation(Long id, GasStation gasStation) {
         GasStation foundGasStation = gasStationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("GasStation not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("GasStation not found with id: " + id));
         foundGasStation.setName(gasStation.getName());
-        foundGasStation.setFuel(gasStation.getFuel());
         return gasStationRepository.save(foundGasStation);
     }
 
     public void deleteGasStation(Long id) {
+        if (gasStationRepository.findById(id).isEmpty()) {
+            throw new RuntimeException("GasStation not found with id: " + id);
+        }
         gasStationRepository.deleteById(id);
     }
 

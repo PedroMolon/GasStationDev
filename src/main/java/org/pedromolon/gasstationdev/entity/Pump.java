@@ -1,19 +1,16 @@
 package org.pedromolon.gasstationdev.entity;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
-@Table(name = "gastations")
+@Table(name = "pumps")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class GasStation {
+public class Pump {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +19,12 @@ public class GasStation {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "gasStation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Pump> pumps;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "gas_station_id", nullable = false)
+    private GasStation gasStation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fuel_id", nullable = false)
+    private Fuel fuel;
 }
+
